@@ -1,0 +1,16 @@
+.listview {
+  font-family: arial;
+  font-size: 16px;
+  line-height: 1.5em;
+  margin: 0px;
+}
+
+.listview ul {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+}
+
+.listview li {
+  display: block;
+}
