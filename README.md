@@ -1,2 +1,2 @@
-# cat-sorter
+# cat-list
 Alphabetical Cat Lister
