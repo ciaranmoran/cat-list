@@ -1,4 +1,9 @@
-import { cloneArray, groupByKey, orderByKey } from 'helpers/utils';
+import {
+  cloneArray,
+  groupByKey,
+  orderByKey,
+  deDuplicate,
+} from 'helpers/utils';
 
 export const getPetOwnersByType = ({
   people,
@@ -37,15 +42,31 @@ export const getPeopleWithPets = people =>
     return true;
   });
 
+export const getAllPetTypes = petOwners => {
+  const allTypes = [];
+
+  petOwners.forEach(owner =>
+    allTypes.push(...owner.pets.map(pet => pet.type)),
+  );
+
+  const distinctTypes = deDuplicate(allTypes);
+
+  return distinctTypes;
+};
+
 export const groupPeopleByGender = people =>
   groupByKey(people, 'gender');
 
-export const getListViewItems = groups => {
+export const getListViewItems = (genderGroups, petTypeKey) => {
   const out = [];
 
-  Object.entries(groups).forEach(group => {
-    const [key, value] = group;
-    out.push({ gender: [key], pets: value });
+  Object.entries(genderGroups).forEach(group => {
+    const [gender, people] = group;
+    const pets = [];
+
+    people.forEach(person => pets.push(...person[petTypeKey]));
+
+    out.push({ gender, pets });
   });
 
   return out;

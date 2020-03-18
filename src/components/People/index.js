@@ -1,22 +1,32 @@
 import React from 'react';
+import { PeopleCtx } from 'components/context/PeopleContext';
 import { getPeople } from 'services';
 import ListView from 'components/ListView';
 import {
   getPeopleWithPets,
+  getAllPetTypes,
   getPetOwnersByType,
   groupPeopleByGender,
   getListViewItems,
   orderPetsByName,
 } from './People.helpers';
+import './People.css';
 
 export default function People() {
+  const [petType, setPetType] = React.useState('Cat');
   const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState(null);
-  const [people, setPeople] = React.useState([]);
+
+  const ctx = React.useContext(PeopleCtx);
+  const { people, setPeople, error, setError } = ctx;
 
   React.useEffect(() => {
     getPeople({ setLoading, setPeople, setError });
+    // eslint-disable-next-line
   }, []);
+
+  const updatePetType = () => e => {
+    setPetType(e.target.value);
+  };
 
   if (error) {
     return <>{error}</>;
@@ -27,17 +37,28 @@ export default function People() {
   }
 
   const petOwners = getPeopleWithPets(people);
-  const catOwners = getPetOwnersByType({
+  const petTypes = getAllPetTypes(petOwners);
+  const petTypeOwners = getPetOwnersByType({
     people: petOwners,
-    type: 'Cat',
+    type: petType,
     shouldAppendType: true,
-    appendKey: 'cats',
+    appendKey: `${petType}s`,
   });
-  const groupedByGender = groupPeopleByGender(catOwners);
-  const listViewItems = getListViewItems(groupedByGender);
+  const groupedByGender = groupPeopleByGender(petTypeOwners);
+  const listViewItems = getListViewItems(
+    groupedByGender,
+    `${petType}s`,
+  );
 
   return (
-    <div>
+    <div className="people-container">
+      <select onChange={updatePetType()}>
+        {petTypes.map(petType => (
+          <option key={petType} value={petType}>
+            {petType}
+          </option>
+        ))}
+      </select>
       {listViewItems.map(listViewItem => {
         const { gender, pets } = listViewItem;
         const orderedPets = orderPetsByName(pets);

@@ -18,3 +18,6 @@ export const orderByKey = (arr, key) => {
     return -1;
   });
 };
+
+export const deDuplicate = arr =>
+  arr.filter((value, index) => arr.indexOf(value) === index);
